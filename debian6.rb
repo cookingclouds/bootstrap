@@ -1,3 +1,4 @@
+bash -c '
 <%= "export http_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
 
 (
@@ -11,6 +12,18 @@ rm /tmp/gemrc
 if [ ! -f /usr/bin/chef-client ]; then
   apt-get update
   apt-get install -y ruby1.9.1-dev build-essential wget
+  cd /tmp
+  if [ -f /usr/bin/ruby1.9.1 ]; then
+	rm /usr/bin/ruby
+	ln -s /usr/bin/ruby1.9.1 /usr/bin/ruby
+  fi
+  if [ ! -f /usr/bin/gem ];then
+     #apt-get install -y rubygems1.8
+    curl -O http://production.cf.rubygems.org/rubygems/rubygems-1.8.24.tgz
+    tar xzvf rubygems-1.8.24.tgz
+    cd rubygems-1.8.24/
+    ruby setup.rb --no-format-executable
+  fi
 fi
 
 gem update
