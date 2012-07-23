@@ -17,17 +17,20 @@ if [ ! -f /usr/bin/chef-client ]; then
 	rm /usr/bin/ruby
 	ln -s /usr/bin/ruby1.9.1 /usr/bin/ruby
   fi
-  if [ ! -f /usr/bin/gem ];then
-     #apt-get install -y rubygems1.8
-    curl -O http://production.cf.rubygems.org/rubygems/rubygems-1.8.24.tgz
-    tar xzvf rubygems-1.8.24.tgz
-    cd rubygems-1.8.24/
-    ruby setup.rb --no-format-executable
+  if [ ! -f /usr/bin/gem ]; then
+    CURRENTGEM=$(curl <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> http://rubygems.org/pages/download 2>/dev/null|grep -A1 "download\">Download RubyGems")
+    CURRENTGEM=$(echo $CURRENTGEM |tail -1)
+    CURRENTGEM=$(echo $CURRENTGEM |cut -d\< -f 6 )
+    CURRENTGEM=$(echo $CURRENTGEM | cut -dv -f 2)
+    curl <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> -O http://production.cf.rubygems.org/rubygems/rubygems-${CURRENTGEM}.tgz
+    tar xzvf rubygems-${CURRENTGEM}.tgz
+    cd rubygems-${CURRENTGEM}/
+    ruby setup.rb --no-rdoc --no-ri --no-format-executable
   fi
 fi
 
 gem update
-gem install ohai --verbose
+gem install ohai
 gem install chef --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
