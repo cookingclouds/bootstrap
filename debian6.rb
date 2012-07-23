@@ -29,9 +29,10 @@ if [ ! -f /usr/bin/chef-client ]; then
   fi
 fi
 
+gem update --system
 gem update
-gem install ohai
-gem install chef --verbose <%= bootstrap_version_string %>
+gem install ohai --no-rdoc --no-ri --verbose
+gem install chef --no-rdoc --no-ri --verbose <%= bootstrap_version_string %>
 
 mkdir -p /etc/chef
 

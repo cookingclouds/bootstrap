@@ -8,9 +8,13 @@ if [ ! -f /usr/bin/chef-client ]; then
   rpm -Uvh $RPMNAME
   yum install -y ruby ruby-devel gcc gcc-c++ automake autoconf make
   cd /tmp
-  curl <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-1.8.24.tgz -O
-  tar zxf rubygems-1.8.24.tgz
-  cd rubygems-1.8.24
+    CURRENTGEM=$(curl <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> http://rubygems.org/pages/download 2>/dev/null|grep -A1 "download\">Download RubyGems")
+    CURRENTGEM=$(echo $CURRENTGEM |tail -1)
+    CURRENTGEM=$(echo $CURRENTGEM |cut -d\< -f 6 )
+    CURRENTGEM=$(echo $CURRENTGEM | cut -dv -f 2)
+  curl <%= "--proxy=on " if knife_config[:bootstrap_proxy] %>http://production.cf.rubygems.org/rubygems/rubygems-${CURRENTGEM}.tgz -O
+  tar zxf rubygems-${CURRENTGEM}.tgz
+  cd rubygems-${CURRENTGEM}
   ruby setup.rb --no-format-executable
 fi
 
