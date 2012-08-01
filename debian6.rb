@@ -11,7 +11,7 @@ rm /tmp/gemrc
 
 if [ ! -f /usr/bin/chef-client ]; then
   apt-get update
-  apt-get install -y ruby1.9.1-dev build-essential wget
+  apt-get install -y ruby1.9.1-dev build-essential wget curl
   cd /tmp
   if [ -f /usr/bin/ruby1.9.1 ]; then
 	rm /usr/bin/ruby
